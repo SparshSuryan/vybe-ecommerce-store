@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>DBW Project</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <section id="header">
+        <a href="#"><img src="img/final (1).png" class="logo" alt="Brand logo"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a class="active" href="shop.html">Shop</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="cart.html"><i class="far fa-shopping-bag"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="prodetails" class="section-p1">
+        <div class="single-pro-image">
+            <img src="img/products/f3.jpg" width="100%" class="MainImg" alt="Men's T-Shirt Front View">
+            <div class="small-img-group">
+                <div class="small-img-col">
+                    <img src="img/products/f2.jpg" width="100%" class="small-img" alt="Men's T-Shirt Side View">
+                </div>
+                <div class="small-img-col">
+                    <img src="img/products/f3.jpg" width="100%" class="small-img" alt="Men's T-Shirt Back View">
+                </div>
+                <div class="small-img-col">
+                    <img src="img/products/f4.jpg" width="100%" class="small-img" alt="Men's T-Shirt Zoomed-In View">
+                </div>
+                <div class="small-img-col">
+                    <img src="img/products/f5.jpg" width="100%" class="small-img" alt="Men's T-Shirt Detailed View">
+                </div>
+            </div>
+        </div>
+
+        <article class="single-pro-details">
+            <h6>Home / T-shirt</h6>
+            <h4>Floral Printed Shirt</h4>
+            <h2 id="product-price">Rs 999</h2> <!-- Price with ID to target -->
+            <label for="size-selector">Size:</label>
+            <select id="size-selector">
+                <option>Select Size</option>
+                <option value="S">Small</option>
+                <option value="M">Medium</option>
+                <option value="L">Large</option>
+                <option value="XL">Extra Large</option>
+                <option value="XXL">XXL</option>
+            </select>
+            <label for="quantity-input">Quantity:</label>
+            <input id="quantity-input" type="number" min="1" value="1">
+            <button class="normal" onclick="addToCart('Floral Printed Shirt')">Add to Cart</button>
+            <a href="cart.html">Go to Cart</a>
+            <h4>Product Details</h4>
+            <p>The Gildan Ultra Cotton T-shirt is made from a substantial 6.0 oz. per sq. yd. fabric constructed from 100% cotton...</p>
+        </article>
+    </section>
+
+    <footer class="section-p1">
+        <div class="col">
+            <img class="logo" src="img/final (1).png" alt="Brand Footer Logo">
+            <h4>Contact</h4>
+            <p><strong>Address:</strong>A-45,AB Market,Sector-62,Noida</p>
+            <p><strong>Phone:</strong>011-44445555</p>
+            <p><strong>Hours:</strong>9-5</p>
+            <div class="follow">
+                <h4>Follow Us</h4>
+                <div class="icon">
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-pinterest-p"></i>
+                    <i class="fab fa-youtube"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <h4>About</h4>
+            <a href="about.html">About us</a>
+            <a href="#">Delivery Information</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Conditions</a>
+            <a href="contact.html">Contact us</a>
+        </div>
+
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="signin.html">Sign In</a>
+            <a href="cart.html">View Cart</a>
+            <a href="#">Help</a>
+        </div>
+
+        <div class="col install">
+            <h4>Install App</h4>
+            <p>From App Store or Google Play Store</p>
+            <div class="row">
+                <img src="img/pay/app.jpg" alt="App Store Icon">
+                <img src="img/pay/play.jpg" alt="Google Play Icon">
+            </div>
+            <p>Secured Payment Gateways</p>
+            <img src="img/pay/pay.png" alt="Payment Gateways">
+        </div>
+
+        <div class="copyright">
+            <p>© 2024 Fashion Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function addToCart(productName) {
+            const size = document.getElementById('size-selector').value;
+            const quantity = parseInt(document.getElementById('quantity-input').value, 10);
+            const imageSrc = document.querySelector('.MainImg').src;
+            const priceText = document.getElementById('product-price').innerText; // Get the price text
+            const price = parseInt(priceText.replace('Rs ', '').trim(), 10); // Remove 'Rs' and parse the number
+
+            if (size === "Select Size") {
+                alert('Please select a size before adding to cart.');
+                return;
+            }
+
+            if (quantity < 1 || isNaN(quantity)) {
+                alert('Please enter a valid quantity.');
+                return;
+            }
+
+            const product = { name: productName, size, quantity, price, image: imageSrc };
+
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push(product);
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            alert(
+                `${productName} (Size: ${size}, Qty: ${quantity}) added to cart!`
+            );
+        }
+
+        // Small images click to update main image
+        document.querySelectorAll('.small-img').forEach((img) => {
+            img.addEventListener('click', function () {
+                document.querySelector('.MainImg').src = img.src;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBW Project - Cart</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th,
+        table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        table img {
+            width: 80px;
+            height: auto;
+        }
+
+        .cart-container {
+            width: 90%;
+            margin: auto;
+        }
+
+        .cart-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .cart-summary .cart-totals {
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .cart-summary button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cart-summary table {
+            width: 100%;
+            margin: 0;
+        }
+
+        .cart-summary table td {
+            border: none;
+        }
+
+        .cart-summary .total {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="header">
+        <a href="#"><img src="img/final (1).png" alt="Brand logo"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a class="active" href="cart.html"><i class="far fa-shopping-bag"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="page-header" class="about-header">
+        <h2>CART</h2>
+        <p>Don't Wait - Your New Look is Just a Click Away</p>
+    </section>
+
+    <div class="cart-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Remove</th>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="cartItems"></tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="cart-totals">
+                <h3>Cart Totals</h3>
+                <table>
+                    <tr>
+                        <td>Cart Subtotal</td>
+                        <td id="subtotal">Rs. 0</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping</td>
+                        <td>Free</td>
+                    </tr>
+                    <tr>
+                        <td class="total">Total</td>
+                        <td class="total" id="totalPrice">Rs. 0</td>
+                    </tr>
+                </table>
+                <button onclick="proceedToCheckout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="section-p1">
+        <p>© VYBE - Your Fashion Destination</p>
+    </footer>
+
+    <script>
+        // Load cart items from localStorage
+        function loadCart() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartItems = document.getElementById("cartItems");
+            const subtotalElement = document.getElementById("subtotal");
+            const totalPriceElement = document.getElementById("totalPrice");
+            cartItems.innerHTML = "";
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                const { name, quantity, price, image } = item;
+                const itemSubtotal = price * quantity;
+                subtotal += itemSubtotal;
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><button onclick="removeFromCart(${index})" style="color:red;"><i class="fas fa-times"></i></button></td>
+                    <td><img src="${image || 'img/products/f1.jpg'}" alt="${name}"></td>
+                    <td>${name}</td>
+                    <td>Rs. ${price}</td>
+                    <td>
+                        <input type="number" min="1" value="${quantity}" onchange="updateQuantity(${index}, this.value)">
+                    </td>
+                    <td>Rs. ${itemSubtotal}</td>
+                `;
+                cartItems.appendChild(row);
+            });
+
+            subtotalElement.textContent = `Rs. ${subtotal}`;
+            totalPriceElement.textContent = `Rs. ${subtotal}`;
+        }
+
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            loadCart();
+        }
+
+        function updateQuantity(index, newQuantity) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart[index].quantity = parseInt(newQuantity) || 1; // Default to 1 if invalid
+            localStorage.setItem("cart", JSON.stringify(cart));
+            loadCart();
+        }
+
+        function proceedToCheckout() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            if (cart.length === 0) {
+                alert("Your cart is empty. Add items to proceed.");
+                return;
+            }
+
+            const cartData = { cart: cart };
+
+            fetch('checkout.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cartData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.order_id) {
+                    alert(`Thank you for shopping with us. Your order is successfully placed, and your Order ID is: ${data.order_id}`);
+                    localStorage.removeItem("cart"); // Clear the cart
+                    window.location.href = "index.html"; // Redirect to index.html
+                } else {
+                    alert(data.error || "An error occurred during checkout.");
+                }
+            })
+            .catch(error => {
+                console.error("Error during checkout:", error);
+                alert("An error occurred. Please try again.");
+            });
+        }
+
+        loadCart();
+    </script>
+</body>
+
+</html>
