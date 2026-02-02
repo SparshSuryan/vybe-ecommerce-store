@@ -33,7 +33,11 @@ A full-stack e-commerce web application featuring dynamic cart management and se
 4. Open `http://localhost/vybe-ecommerce-store`
 
 ## Screenshots
-(Screenshots will be added soon)
+## Home Page
+## Shop Page
+## About Page
+## Contact Page
+## Cart Page
 
 ## 👥 Team Project
 Developed as a group academic project with 2 teammates.
